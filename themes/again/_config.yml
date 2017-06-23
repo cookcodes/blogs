@@ -1,0 +1,36 @@
+# basic
+title: 咕嘟代码
+subtitle: 细细品味，代码本来有滋有味。
+favicon: favicon.ico
+
+avatar: images/avatar.png
+banner_small: images/banner-small.png
+banner_large: images/banner-large.png
+# avatar: http://7xrcp8.com1.z0.glb.clouddn.com/avatar.png
+# banner_small: http://7xrcp8.com1.z0.glb.clouddn.com/banner-small.png
+# banner_large: http://7xrcp8.com1.z0.glb.clouddn.com/banner-large.png
+
+# disqus
+disqus_shortname: CookCodes
+
+# social
+social:
+  github: https://github.com/CookCodes
+  twitter: https://twitter.com/CookCodes
+  weibo: http://weibo.com/CookCodes
+
+# nav #
+nav:
+  home: .
+  archive: archives
+  # about: about
+  rss: atom.xml
+
+# heox-renderre-sass
+node_sass:
+  outputStyle: nested
+  precision: 5
+  sourceComments: false
+
+
+google_analytics: # Put tracking ID here
