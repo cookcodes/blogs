@@ -1,5 +1,6 @@
 ---
-title: Android图形系统架构
+title: Android图形系统架构（译于2014年7月）
+date: 2017-06-23 20:37:23
 ---
 
 译自：http://source.android.com/devices/graphics/architecture.html
@@ -399,15 +400,27 @@ Grafika 中的 "Record GL app" activity 提供了一个这样的例子。在一�
 	* surfaceDestroyed （仅在 Surface 消失之前被调用）
 
 如果你旋转屏幕，Activity 是拆掉，然后重新创建，所以你得到整个的周期。如果它很重要，你可以通过检查isFinishing()是来检测是否"快速"重起的。（有可能开始 / 停止 Activity 如此之快，surfaceCreated() 可能会真正发生在 onPause() 之后。)
+
 如果你按电源键以黑屏，你只得到onPause() — — 没有 surfaceDestroyed()。Surface 仍然活着，并且可以继续渲染。如果你继续要求他们，你甚至可以继续得到 Choreographer 的事件。如果你锁定屏幕并旋转屏幕，当设备重新点亮的时候，您的 activity 可能需要重新启动；但如果不是，点亮屏幕的时候，你可能得到和以前一样的 Surface。
+
 如果 SurfaceView 中使用一个独立的渲染器线程时，这就提出了一个根本性的问题：线程的生命周期应该与 Activity 还是 Surface 挂钩？答案取决于屏幕黑屏时你想要发生什么。有两种基本方法：（1）在Activity 启动/停止的时候启动/停止线程；(2) 在 Surface 创建/销毁的时候启动/停止线程。
+
 1 与应用程序生命周期进行交互。我们在onResume()中启动渲染线程，在onPause()中停止该线程。创建和配置线程时有时有点尴尬，因为有时 Surface 有时已存在，有时不存在。（例如按电源按钮关闭/打开屏幕，Surface 是还活着的）。在线程做一些初始化工作之前，我们必须等待 Surface 创建好。但我们不能简单地通过回调 surfaceCreated()来等待，因为如果 Surface 没被重新创建，该回调不会被再次触发。所以我们需要查询或缓存 Surface 的状态，并将其转发到渲染线程。请注意线程之间传递对象，我们要小心一点 — — 最好是通过Handler 的消息来传递 Surface 或 SurfaceHolder，而不是只将它塞入线程，以避免在多核系统上发生问题（参看Android SMP Primer)。
+
 2 有一定的吸引力，因为 Surface 和渲染器在逻辑上交织在一起。在 Surface 创建之后，我们启动了线程，避免了一些线程间的通信问题。Surface 创建/更改消息只是简单地被转发。我们需要确保关闭屏幕时停止渲染，打开屏幕时继续渲染。这可能是一个简单的事，告诉 Choresgrapher 停止调用绘制帧的回调。onResume()，需要渲染器线程运行的情况下，才恢复回调。然而，它可能不是如此微不足道 — — 如果我们动画基于帧之间经过的时间，在下一个事件到达时，我们可能会有非常大的差距；所以明确的暂停/恢复消息可能是可取的。
+
 以上主要关注的是渲染线程如何配置和它是否执行。一个相关的问题是该 Activity 被杀（在onPause()或onSaveInstanceState()）时如何从渲染线程中提取状态。方法 #1 工作的最佳，因为一旦渲染器线程已加入，无需同步就可以访问其状态。
+
 在 Grafika 的"Hardware scaler exercise"，你可以看到方法 #2 的示例。
+
 ## 附录 c： 用 systrace 跟踪 BufferQueue
+
 如果你真的想要了解图形缓冲区如何移动的，你需要使用 systrace。系统级的图形代码好好检测过，很多都与应用程序框架代码相关。启用"gfx"和"view"标签，一般情况下也需启用"sched"。
+
 如何有效地使用 systrace 的完整描述，需要一个较长的文档。一个值得注意事项是 trace 中出现的 BufferQueues。如果您之前使用过 systrace，你可能已经见过他们，但也许不知道它们是什么。作为一个例子，如果你在 Grafika 的"Play Video（SurfaceView）"运行时抓住一个 trace，，你将会看到一行标记为："SurfaceView"。这行告诉你在任何给定的时刻有多少缓冲区被排队。
+
 该应用程序处于活动状态时，该值会递增 — — 由 MediaCodec 解码器触发帧的渲染，或递减，SurfaceFlinger 做工作时会消耗缓冲区。如果你按每秒 30 帧播放视频，队列的值会从 0 到 1变化，因为 ~ 60 fps 的显示器可以很容易跟上源。（您还会注意到 SurfaceFlinger 只在有工作要做时才醒来，而不是 60 次每秒。系统将尽量避免工作，如果屏幕上什么都不更新，将完全禁用 VSYNC)。
+
 如果你切换到"Play video（TextureView）"，抓一个新的 trace，你会看到其中一行有长长的长名称 （"com.android.grafika/com.android.grafika.PlayMovieActivity") 。这是主要的 UI 层，当然这只是另一个 BufferQueue。因为 TextureView 渲染到 UI 层，而不是单独的图层，您将在这里看到的所有与视频相关的更新。
+
 有关 systrace 的详细信息，请参阅关于该工具的 Android Documentation。
