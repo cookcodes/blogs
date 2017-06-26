@@ -5,7 +5,7 @@ date: 2017-06-23 20:37:23
 
 译自：http://source.android.com/devices/graphics/architecture.html
  
-<!-- toc -->
+ <!-- toc -->
 
 每个开发人员应该知道Surface、 SurfaceHolder、 EGLSurface、 SurfaceView、 GLSurfaceView、 SurfaceTexture、 TextureView 和 SurfaceFlinger。
 
@@ -46,7 +46,7 @@ Gralloc 分配器分配的不仅仅本机堆（heap）上分配内存的另一�
 	* 会否作为 OpenGL ES （"GLES"） 纹理
 	* 是否被视频编码器使用
 
-例如，如果您的格式指定为RGBA 8888的像素，并且您指示缓冲区将从软件访问--这意味着您的应用程序将直接触摸像素 — — 分配器将分配一个缓冲区，每个像素需要 4 个字节，按R-G-B-A顺序。如果相反，你说该缓冲区将作为GLES纹理，只能从硬件（GPU）访问，分配器可以做GLES驱动程序想做的任何事情 — — BGRA 排序，非线形"swizzled"布局，替代颜色格式，等。允许硬件使用其喜欢的格式可以提高性能。
+例如，如果您的格式指定为RGBA 8888的像素，并且您指示缓冲区将从软件访问--这意味着您的应用程序将直接触摸像素 — — 分配器将分配一个缓冲区，每个像素需要 4 个字节，按R-G-B-A顺序。如果相反，你说该缓冲区将作为GLES纹理，只能从硬件（GPU）访问，分配器可以做GLES驱动程序期望其做的任何事情 — — BGRA 顺序，非线形"swizzled"布局，替代颜色格式，等。允许硬件使用其喜欢的格式可以提高性能。
 
 在某些平台上，不能组合一些值。例如，"视频编码器"标志可能需要以YUV 像素为单位，因此添加"软件访问"并指定 RGBA 8888标志会失败。
 
