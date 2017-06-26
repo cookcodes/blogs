@@ -4,6 +4,7 @@ date: 2017-06-23 20:37:23
 ---
 
 译自：http://source.android.com/devices/graphics/architecture.html
+这是2014年针对KitKat版本的文章，比较老了，请看新版的吧（2017年6月份翻译的）。
  
  <!-- toc -->
 
