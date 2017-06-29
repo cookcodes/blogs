@@ -70,6 +70,8 @@ theme: again
 ## Docs: https://hexo.io/docs/deployment.html
 deploy:
   type: git
-  repository: https://github.com/cookcodes/cookcodes.github.io.git
+  repo: 
+    github: https://github.com/cookcodes/cookcodes.github.io.git
+    duapp: https://git.duapp.com/appidxclheu7qy1
   branch: master
   
